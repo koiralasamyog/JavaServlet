@@ -1,11 +1,15 @@
 <%@ page session="true" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="test.User" %>
+<%
+    List<User> users = (List<User>) request.getAttribute("userList");
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-/* Global styles */
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -13,9 +17,8 @@ body {
     color: #333;
 }
 
-/* Container for all content */
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 40px auto;
     padding: 20px;
     background-color: white;
@@ -23,7 +26,6 @@ body {
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
 
-/* Header section */
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -31,7 +33,6 @@ header {
 
 header h1 {
     color: #04AA6D;
-    margin-bottom: 5px;
 }
 
 header p {
@@ -39,38 +40,47 @@ header p {
     color: #555;
 }
 
-/* Sections */
-section {
-    margin-bottom: 30px;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-section h2 {
-    border-bottom: 2px solid #04AA6D;
-    padding-bottom: 5px;
-    color: #04AA6D;
+table, th, td {
+    border: 1px solid #ccc;
 }
 
-/* Project cards */
-.project-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+th, td {
+    padding: 12px;
+    text-align: left;
 }
 
-.project-card {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 6px;
-    flex: 1 1 calc(45% - 20px);
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+th {
+    background-color: #04AA6D;
+    color: white;
 }
 
-/* Contact */
-.contact p {
-    margin: 8px 0;
+.action-btn {
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
 }
 
-/* Logout button */
+.add-btn {
+    background-color: #04AA6D;
+}
+
+.edit-btn {
+    background-color: #2196F3;
+}
+
+.delete-btn {
+    background-color: #f44336;
+}
+
 .logout-btn {
     display: block;
     width: 150px;
@@ -86,15 +96,9 @@ section h2 {
     cursor: pointer;
 }
 
-.logout-btn:hover {
+.logout-btn:hover,
+.action-btn:hover {
     opacity: 0.8;
-}
-
-/* Responsive for small screens */
-@media screen and (max-width: 600px) {
-    .projects {
-        flex-direction: column;
-    }
 }
 </style>
 </head>
@@ -103,35 +107,38 @@ section h2 {
 <div class="container">
     <header>
         <h1>Welcome, <%= session.getAttribute("firstName") != null ? session.getAttribute("firstName") : "User" %>!</h1>
-        <p>This is your portfolio home page</p>
+        <p>Your Portfolio Home with CRUD Users</p>
     </header>
 
-    <section class="about">
-        <h2>About Me</h2>
-        <p>Email: <%= session.getAttribute("userEmail") != null ? session.getAttribute("userEmail") : "Not Provided" %></p>
-        <p>Here you can put a short bio or description about yourself.</p>
-    </section>
-
-    <section class="projects">
-        <h2>Projects</h2>
-        <div class="project-cards">
-        	<div class="project-card">
-            		<h3>Project 1</h3>
-            		<p>Description of Project 1</p>
-       		</div>
-        	<div class="project-card">
-            		<h3>Project 2</h3>
-            		<p>Description of Project 2</p>
-        	</div>
-	</div>
-        <!-- Add more projects as needed -->
-    </section>
-
-    <section class="contact">
-        <h2>Contact</h2>
-        <p>Phone: 123-456-7890</p>
-        <p>Email: <%= session.getAttribute("userEmail") != null ? session.getAttribute("userEmail") : "Not Provided" %></p>
-    </section>
+    <h2>Users</h2>
+    <a href="UserServlet?action=add" class="action-btn add-btn">Add New User</a>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+        <%
+            if(users != null){
+                for(User u : users){
+        %>
+        <tr>
+            <td><%= u.getId() %></td>
+            <td><%= u.getFirstName() %></td>
+            <td><%= u.getLastName() %></td>
+            <td><%= u.getEmail() %></td>
+            <td>
+                <a href="UserServlet?action=edit&id=<%=u.getId()%>" class="action-btn edit-btn">Edit</a>
+                <a href="UserServlet?action=delete&id=<%=u.getId()%>" class="action-btn delete-btn">Delete</a>
+            </td>
+        </tr>
+        <%
+                }
+            }
+        %>
+    </table>
 
     <form action="index.jsp" method="get">
         <button type="submit" class="logout-btn">Logout</button>
